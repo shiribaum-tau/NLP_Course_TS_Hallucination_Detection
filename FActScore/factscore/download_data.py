@@ -118,10 +118,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir',
                         type=str,
-                        default=".cache/factscore")
+                        default=os.path.join(".cache","factscore"))
     parser.add_argument('--model_dir',
                         type=str,
-                        default=".cache/factscore")
+                        default=os.path.join(".cache","factscore"))
     parser.add_argument('--llama_7B_HF_path',
                         type=str,
                         default=None)
