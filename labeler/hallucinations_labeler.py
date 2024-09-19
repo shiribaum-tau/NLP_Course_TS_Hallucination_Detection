@@ -130,7 +130,7 @@ def read_jsonl(filename):
 
 # Example usage:
 #jsonl_file = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\answers_gpt4_bio_test_addtional.jsonl"
-jsonl_gpt = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\ChatGPT.jsonl"
+jsonl_gpt = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\ChatGPT.jsonl"
 df = read_jsonl(jsonl_gpt)
 generations = df['output']
 annotations = df['annotations']
@@ -139,6 +139,7 @@ for annotation, generation in zip(annotations, generations):
         continue
     total_annotation_length = 0
     hallucination_indices = []
+    rebuilt_sentence = []
     for sentence in annotation:
         sentence_text = sentence['text'].lower()
         relevancy = sentence['is-relevant']
@@ -147,22 +148,26 @@ for annotation, generation in zip(annotations, generations):
         if atomic_facts is None:
             continue
 
+        split_sentence = sentence_text.translate(str.maketrans(punctuations_extended, ' ' * len(punctuations_extended))).split(" ")
+        split_sentence = [split_sentence[i] for i in range(len(split_sentence)) if split_sentence[i] != ""]
+        for word in split_sentence:
+            rebuilt_sentence.append(word)
+
         # Reduce facts to weak-uniqueness (Words that appear in ALL atoms are delteted)
         reduced_facts, labels = reduce_facts(atomic_facts, method='Cascading Deletion')
         for rfact, label in zip(reduced_facts, labels):
             if label != "NS":
                 continue
             rrfact = remove_auxiliary_verbs(rfact)
-            #print(rrfact)
+            print(rrfact)
             if rrfact != "":
                 fact_ind = find_index_of_fact_in_sentence(rrfact, sentence_text)
-                #print(fact_ind + total_annotation_length)
+                print(fact_ind + total_annotation_length)
                 hallucination_indices.append(fact_ind + total_annotation_length)
         total_annotation_length += len(sentence_text.split(" "))
-    splitted_generations = generation.split(" ")
     for i in hallucination_indices:
-        splitted_generations[i] = f"[{splitted_generations[i]}]"
-    marked_generations = " ".join(splitted_generations)
+        rebuilt_sentence[i] = f"[{rebuilt_sentence[i]}]"
+    marked_generations = " ".join(rebuilt_sentence)
     print(marked_generations)
 
 
