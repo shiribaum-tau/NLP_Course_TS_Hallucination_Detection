@@ -1,0 +1,12 @@
+{"input": "Question: Tell me a bio of Lanny Flaherty.",
+ "output": "I am a GPT-4 Prompt output.",
+ "topic": "Lanny Flaherty",
+ "cat": ["very rare", "North America"],
+ "annotations": [I am a list where every element is a dictionary -
+	{"text": "A single sentence from the output.",
+	 "is-relevant": true/false,
+	 "XXX-atomic-facts": [ I am a list where every element is a dictionary -
+		{"text": "I am an atomic element", "label": "S" or "NS}]
+	}
+     ]
+}
