@@ -2,6 +2,13 @@ import pandas as pd
 import json
 import numpy as np
 import matplotlib.pyplot as plt
+from transformers import GPTNeoXForCausalLM, AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained(
+  "EleutherAI/pythia-70m-deduped",
+  revision="step3000",
+  cache_dir="./pythia-70m-deduped/step3000",
+)
 
 auxiliary_verbs = [
     "be", "have", "do", "can", "could", "may", "might",
@@ -14,6 +21,8 @@ auxiliary_verbs = [
     "must",
     "shall", "should",
     "will", "would"]
+
+auxiliary_verbs_tokens = [tokenizer(aux_v)[0].ids[0] for aux_v in auxiliary_verbs]
 
 punctuations_extended = r"""!"#$%&'()*+,-–./:;<=>?@[\]^_`{|}~"""
 
@@ -33,49 +42,86 @@ def remove_auxiliary_verbs(string: str):
     return ' '.join(split_string)
 
 
-def reduce_facts(atoms, method):
+def remove_auxiliary_verbs_tokens(tokens: list):
+    for t in auxiliary_verbs_tokens:
+        while t in tokens:
+            tokens.remove(t)
+
+
+def reduce_facts(atoms, method, tokenize_atoms):
     if len(atoms) == 1:
-        return [atoms[0]['text'].lower()], [atoms[0]['label']]
+        if not tokenize_atoms:
+            return [atoms[0]['text'].lower()], [atoms[0]['label']]
+        else:
+            return [tokenizer(atoms[0]['text'])[0].ids], [atoms[0]['label']]
     cut_atoms = []
     labels = []
 
     if method == 'Weak Uniqueness':
-        unique_words = set(atoms[0]['text'].lower().split(' '))
+        if not tokenize_atoms:
+            unique_words = set(atoms[0]['text'].lower().split(' '))
+        else:
+            unique_words = set(tokenizer(atoms[0]['text'])[0].ids)
+
         for atom in atoms[1:]:
-            current_unique_words = set(atom['text'].lower().split(' '))
+            if not tokenize_atoms:
+                current_unique_words = set(atom['text'].lower().split(' '))
+            else:
+                current_unique_words = set(tokenizer(atom['text'])[0].ids)
             unique_words = unique_words.intersection(current_unique_words)
-        for atom in atoms:
-            atom_sentence = atom['text'].lower()
-            for word in unique_words:
-                atom_sentence = atom_sentence.split(" ")
-                atom_sentence = delete_word_from_atom_sentence_and_join(word, atom_sentence)
-            cut_atoms.append(atom_sentence)
+        if not tokenize_atoms:
+            for atom in atoms:
+                atom_sentence = atom['text'].lower()
+                for word in unique_words:
+                    atom_sentence = atom_sentence.split(" ")
+                    atom_sentence = delete_word_from_atom_sentence_and_join(word, atom_sentence)
+                cut_atoms.append(atom_sentence)
+        else:
+            for atom in atoms:
+                atom_sentence = tokenizer(atom['text'])[0].ids
+                for word in unique_words:
+                    atom_sentence = [token for token in atom_sentence if token != word]
+                cut_atoms.append(atom_sentence)
         labels = [atom['label'] for atom in atoms]
         return cut_atoms, labels
 
     if method == "Cascading Deletion":
         atoms_df = pd.DataFrame(atoms)['text']
         atoms_num = len(atoms_df)
-        atoms_df = [atoms_df[i].lower() for i in range(atoms_num)]
+        if not tokenize_atoms:
+            atoms_df = [atoms_df[i].lower() for i in range(atoms_num)]
+        else:
+            atoms_df = [tokenizer(atoms_df[i])[0].ids for i in range(atoms_num)]
         labels = [pd.DataFrame(atoms)['label'][i] for i in range(atoms_num)]
 
         atoms_to_labels = {}
         for i in range(atoms_num):
-            atoms_to_labels[atoms_df[i]] = labels[i]
+            atoms_to_labels[str(atoms_df[i])] = labels[i]
 
-        sorted_atoms_by_length = sorted([atoms_df[i].split(' ') for i in range(atoms_num)], key=len)
-        merged_sorted_atoms = [" ".join(sorted_atoms_by_length[i]) for i in range(atoms_num)]
-        sorted_labels_by_length = [atoms_to_labels[merged_sorted_atoms[i]] for i in range(atoms_num)]
+        if not tokenize_atoms:
+            sorted_atoms_by_length = sorted([atoms_df[i].split(' ') for i in range(atoms_num)], key=len)
+            merged_sorted_atoms = [" ".join(sorted_atoms_by_length[i]) for i in range(atoms_num)]
+        else:
+            merged_sorted_atoms = sorted(atoms_df, key=len)
+            sorted_atoms_by_length = merged_sorted_atoms
+        sorted_labels_by_length = [atoms_to_labels[str(merged_sorted_atoms[i])] for i in range(atoms_num)]
 
         for atom_ind, atom_text in enumerate(sorted_atoms_by_length):
             for word in atom_text:
                 for next_atom_ind in range(atom_ind+1, atoms_num):
                     next_atom = sorted_atoms_by_length[next_atom_ind]
-                    next_atom_updated = delete_word_from_atom_sentence_and_join(word, next_atom).split(" ")
+                    if not tokenize_atoms:
+                        next_atom_updated = delete_word_from_atom_sentence_and_join(word, next_atom).split(" ")
+                    else:
+                        next_atom_updated = [token for token in next_atom if token != word]
                     sorted_atoms_by_length[next_atom_ind] = next_atom_updated
+
         for i in range(len(sorted_atoms_by_length)):
             atom = sorted_atoms_by_length[i]
-            merged_atom = " ".join(atom)
+            if not tokenize_atoms:
+                merged_atom = " ".join(atom)
+            else:
+                merged_atom = atom
             cut_atoms.append(merged_atom)
         return cut_atoms, sorted_labels_by_length
 
@@ -88,27 +134,35 @@ def reduce_facts(atoms, method):
         raise ValueError('method arg is invalid')
 
 
-def find_index_of_fact_in_sentence(fact: str, sentence: str):
+def split_string(string: str):
+    split = string.translate(str.maketrans(punctuations_extended, ' '*len(punctuations_extended))).split(" ")
+    return [split[i] for i in range(len(split)) if split[i] != ""]
+
+
+def find_index_of_fact_in_sentence(fact, sentence, used_tokenizer):
     # Option 1 - Look
-    split_fact = fact.translate(str.maketrans(punctuations_extended, ' '*len(punctuations_extended))).split(" ")
-    split_fact = [split_fact[i] for i in range(len(split_fact)) if split_fact[i] != ""]
-    split_sentence = sentence.translate(str.maketrans(punctuations_extended, ' '*len(punctuations_extended))).split(" ")
-    split_sentence = [split_sentence[i] for i in range(len(split_sentence)) if split_sentence[i] != ""]
-    ind_array = []
+    if not used_tokenizer:
+        split_fact = split_string(fact)
+        split_sentence = split_string(sentence)
+    else:
+        split_fact = fact
+        split_sentence = sentence
+
+    ind_list = []
     for i, fact_word in enumerate(split_fact):
         if fact_word not in split_sentence:
             continue
         word_ind = split_sentence.index(fact_word)
-        ind_array.append(word_ind)
-    ind_array = np.array(ind_array)
+        ind_list.append(word_ind)
+    ind_array = np.array(ind_list)
     n = len(ind_array)
     # Given an exponentially decaying weight to the indices, to find the proper index where the fact leads.
     # sum of all weight should be 1.
     if n == 0:
-        return -1
+        return -1, None
     a = (0.5/(1-(0.5)**n))
     weights_array_exp = np.array([a/(2**i) for i in range(n-1, -1, -1)])
-    return int(ind_array @ weights_array_exp)
+    return int(ind_array @ weights_array_exp), ind_list
 
 
 def read_jsonl(filename):
@@ -129,6 +183,7 @@ def read_jsonl(filename):
 
 
 # Example usage:
+use_tokenizer = True
 #jsonl_file = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\answers_gpt4_bio_test_addtional.jsonl"
 jsonl_gpt = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\ChatGPT.jsonl"
 df = read_jsonl(jsonl_gpt)
@@ -141,6 +196,8 @@ for annotation, generation in zip(annotations, generations):
     hallucination_indices = []
     rebuilt_sentence = []
     for sentence in annotation:
+        sentence_text_tokenized = tokenizer(sentence['text'])[0].ids
+
         sentence_text = sentence['text'].lower()
         relevancy = sentence['is-relevant']
         atomic_facts = sentence['human-atomic-facts']
@@ -148,27 +205,58 @@ for annotation, generation in zip(annotations, generations):
         if atomic_facts is None:
             continue
 
-        split_sentence = sentence_text.translate(str.maketrans(punctuations_extended, ' ' * len(punctuations_extended))).split(" ")
-        split_sentence = [split_sentence[i] for i in range(len(split_sentence)) if split_sentence[i] != ""]
-        for word in split_sentence:
-            rebuilt_sentence.append(word)
+        if not use_tokenizer:
+            split_sentence = sentence_text.translate(str.maketrans(punctuations_extended, ' ' * len(punctuations_extended))).split(" ")
+            split_sentence = [split_sentence[i] for i in range(len(split_sentence)) if split_sentence[i] != ""]
+            for word in split_sentence:
+                rebuilt_sentence.append(word)
+        else:
+            for t in sentence_text_tokenized:
+                rebuilt_sentence.append(t)
 
         # Reduce facts to weak-uniqueness (Words that appear in ALL atoms are delteted)
-        reduced_facts, labels = reduce_facts(atomic_facts, method='Cascading Deletion')
+        reduced_facts, labels = reduce_facts(atomic_facts, method='Cascading Deletion', tokenize_atoms=use_tokenizer)
         for rfact, label in zip(reduced_facts, labels):
             if label != "NS":
                 continue
-            rrfact = remove_auxiliary_verbs(rfact)
+            if not use_tokenizer:
+                rrfact = remove_auxiliary_verbs(rfact)
+            else:
+                remove_auxiliary_verbs_tokens(rfact)
+                rrfact = rfact
             print(rrfact)
-            if rrfact != "":
-                fact_ind = find_index_of_fact_in_sentence(rrfact, sentence_text)
-                print(fact_ind + total_annotation_length)
-                hallucination_indices.append(fact_ind + total_annotation_length)
-        total_annotation_length += len(sentence_text.split(" "))
-    for i in hallucination_indices:
-        rebuilt_sentence[i] = f"[{rebuilt_sentence[i]}]"
-    marked_generations = " ".join(rebuilt_sentence)
-    print(marked_generations)
+
+            if (not use_tokenizer and rrfact != "") or (use_tokenizer and len(rrfact) != 0):
+                my_sentence = sentence_text if not use_tokenizer else sentence_text_tokenized
+                fact_ind, fact_indices_list = find_index_of_fact_in_sentence(rrfact, my_sentence, use_tokenizer)
+                if fact_ind == -1 or fact_indices_list is None:
+                    continue
+                for ind in fact_indices_list:
+                    hallucination_indices.append(ind + total_annotation_length)
+                # hallucination_indices.append(fact_ind + total_annotation_length)
+        if not use_tokenizer:
+            total_annotation_length += len(split_string(sentence_text))
+        else:
+            total_annotation_length += len(sentence_text_tokenized)
+
+    if use_tokenizer:
+        marked_hallucinations_sentence = []
+        for i, t in enumerate(rebuilt_sentence):
+            if i in hallucination_indices:
+                marked_hallucinations_sentence.append(60)  # token for [
+                marked_hallucinations_sentence.append(t)  # token
+                marked_hallucinations_sentence.append(62)  # token for ]
+            else:
+                marked_hallucinations_sentence.append(t)
+        marked_hallucinations_sentence_decoded = tokenizer.decode(marked_hallucinations_sentence)
+        print(marked_hallucinations_sentence_decoded)
+    else:
+        for i in hallucination_indices:
+            rebuilt_sentence[i] = f"[{rebuilt_sentence[i]}]"
+        marked_generations = " ".join(rebuilt_sentence)
+        print(marked_generations)
+    # what we want to return is hallucinations indices and sentence text tokenized => Only need to notice that /n are
+    # cut in the whole ordeal.
 
 
 
