@@ -165,6 +165,27 @@ def find_index_of_fact_in_sentence(fact, sentence, used_tokenizer):
     return int(ind_array @ weights_array_exp), ind_list
 
 
+def read_our_json(filename):
+    """Parses a JSONL file and extracts the numeric data.
+
+    Args:
+        filename: The path to the JSONL file.
+
+    Returns:
+        A Pandas DataFrame containing the extracted numeric data.
+    """
+
+    data = []
+    with open(filename, 'r') as f:
+        for line in f:
+            question_dictionary = json.loads(line)
+            for d in question_dictionary:
+                data.append(d)
+
+    df = pd.DataFrame(data)
+    return df
+
+
 def read_jsonl(filename):
     """Reads a JSONL file into a Pandas DataFrame.
 
@@ -185,8 +206,10 @@ def read_jsonl(filename):
 # Example usage:
 use_tokenizer = True
 #jsonl_file = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\answers_gpt4_bio_test_addtional.jsonl"
-jsonl_gpt = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\ChatGPT.jsonl"
-df = read_jsonl(jsonl_gpt)
+#jsonl_gpt = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\ChatGPT.jsonl"
+example_output = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\example_output-1.json"
+#df_old = read_jsonl(jsonl_gpt)
+df = read_our_json(example_output)
 generations = df['output']
 annotations = df['annotations']
 for annotation, generation in zip(annotations, generations):
