@@ -207,9 +207,10 @@ def read_jsonl(filename):
 use_tokenizer = True
 #jsonl_file = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\answers_gpt4_bio_test_addtional.jsonl"
 #jsonl_gpt = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\ChatGPT.jsonl"
-example_output = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\example_output-1.json"
+#example_output = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\example_output-1.json"
+example_output_2 = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\fact_checked_data\pythia_2.8_deterministic_fact_checked.json"
 #df_old = read_jsonl(jsonl_gpt)
-df = read_our_json(example_output)
+df = read_our_json(example_output_2)
 generations = df['output']
 annotations = df['annotations']
 for annotation, generation in zip(annotations, generations):
@@ -225,7 +226,7 @@ for annotation, generation in zip(annotations, generations):
         relevancy = sentence['is-relevant']
         atomic_facts = sentence['human-atomic-facts']
 
-        if atomic_facts is None:
+        if atomic_facts is None or len(atomic_facts) == 0:
             continue
 
         if not use_tokenizer:
