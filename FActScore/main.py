@@ -9,6 +9,7 @@ nltk.download('punkt_tab')
 
 KEY = ".key"
 DATA_ROOT = os.path.join("..", "gen_data") #"/home/joberant/NLP_2324b/kr/output"
+REMOVE_PREFIX = True
 
 def remove_prefix(s, pref):
     if s.startswith(pref):
@@ -32,9 +33,10 @@ def main():
             generation_data = pickle.load(f)
         stripped_generation = remove_prefix(generation_data['generated_text'],
                                             generation_data['prompt'])
+        full_output = stripped_generation if REMOVE_PREFIX else generation_data['generated_text']
         generations.append(stripped_generation)
         out_data.append(dict(input=generation_data['prompt'],
-                             output=generation_data['generated_text'],
+                             output=full_output,
                              topic=generation_data['entity'],
                              cat=["N/A", "N/A"]))
     topics = [i['topic'] for i in out_data]  # topic that will be sent to factscore
@@ -47,7 +49,7 @@ def main():
         # If the generation starts with the prompt,
         # create an atom with it marked as "supported"
         prompt = out_dat['input']
-        if out_dat['output'].startswith(prompt):
+        if (not REMOVE_PREFIX) and out_dat['output'].startswith(prompt):
             annot = create_annotation(prompt, [dict(text=prompt, label="S")])
             annotations.append(annot)
         sent_to_atoms = checked_facts['sentences_to_facts'][out_dat['topic']]
