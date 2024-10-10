@@ -8,7 +8,7 @@ import json
 nltk.download('punkt_tab')
 
 KEY = ".key"
-DATA_ROOT = os.path.join("..", "gen_data") #"/home/joberant/NLP_2324b/kr/output"
+DATA_ROOT = "/home/joberant/NLP_2324b/shirabaum/pythia_nologits" #os.path.join("..", "gen_data") #"/home/joberant/NLP_2324b/kr/output"
 REMOVE_PREFIX = True
 
 def remove_prefix(s, pref):
@@ -58,13 +58,6 @@ def main():
             annot = create_annotation(sentence, [{ "text": i, "label": "S" if atom_to_verdict[i] else "NS" } for i in atoms])
             annotations.append(annot)
         out_dat['annotations'] = annotations
-
-        try:
-            print("Backing up...")
-            with open("pythia_2.8_deterministic_fact_checked.json", "w") as f:
-                json.dump(out_data, f)
-        except:
-            print("Failed to output. Moving on...")
 
     with open("pythia_2.8_deterministic_fact_checked.json", "w") as f:
         json.dump(out_data, f)

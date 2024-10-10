@@ -37,16 +37,32 @@ pip cache info
 conda info
 ```
 
+*** HuggingFace ***
+Add to ~/.bashrc
+```
+export HF_HOME=/home/joberant/NLP_2324b/<NAME>/.cache/huggingface
+```
+Run:
+```
+mkdir /home/joberant/NLP_2324b/<NAME>/.cache/huggingface
+ln -s /home/joberant/NLP_2324b/<NAME>/.cache/huggingface ~/.cache/huggingface
+```
+
+
+
 ************* Creating the env *************
 I created my env like this:
 ```
-conda create -n <NAME> python=3.7
+conda create -n <NAME> python=3.8
 ```
 
 Then inside I used pip to install the packages I needed:
 ```
 conda activate <NAME>
-pip install torch sentence-transformers transformers openai rank-bm25 spacy nltk
+conda install -c conda-forge spacy
+python -m pip install numpy torch sentence-transformers transformers openai rank-bm25 nltk ipython
+
+python -m spacy download en_core_web_sm
 ```
 
 Now, hopefully, running the interactive python interpreter on a server with a GPU should work.
