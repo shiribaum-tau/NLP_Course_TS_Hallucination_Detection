@@ -110,7 +110,7 @@ class DocDB(object):
 class Retrieval(object):
 
     def __init__(self, db, cache_path, embed_cache_path,
-                 retrieval_type="bm25", batch_size=None): #gtr-t5-large
+                 retrieval_type="gtr-t5-large", batch_size=None): #gtr-t5-large #bm25
         self.db = db
         self.cache_path = cache_path
         self.embed_cache_path = embed_cache_path
