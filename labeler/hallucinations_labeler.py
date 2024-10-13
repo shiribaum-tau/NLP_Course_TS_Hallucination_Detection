@@ -5,10 +5,8 @@ import matplotlib.pyplot as plt
 from transformers import GPTNeoXForCausalLM, AutoTokenizer
 
 tokenizer = AutoTokenizer.from_pretrained(
-  "EleutherAI/pythia-70m-deduped",
-  revision="step3000",
-  cache_dir="./pythia-70m-deduped/step3000",
-)
+  "EleutherAI/pythia-2.8b")
+tokenizer.pad_token = tokenizer.eos_token
 
 auxiliary_verbs = [
     "be", "have", "do", "can", "could", "may", "might",
@@ -26,6 +24,8 @@ auxiliary_verbs_tokens = [tokenizer(aux_v)[0].ids[0] for aux_v in auxiliary_verb
 
 punctuations_extended = r"""!"#$%&'()*+,-–./:;<=>?@[\]^_`{|}~"""
 
+punctuations_extended_tokens = [tokenizer(c)[0].ids[0] for c in punctuations_extended]
+
 
 def delete_word_from_atom_sentence_and_join(word: str, atom_sentence: list):
     for i in range(len(atom_sentence)):
@@ -42,10 +42,14 @@ def remove_auxiliary_verbs(string: str):
     return ' '.join(split_string)
 
 
-def remove_auxiliary_verbs_tokens(tokens: list):
+def remove_auxiliary_verbs_tokens(tokens: list, remove_punctuation = False):
     for t in auxiliary_verbs_tokens:
         while t in tokens:
             tokens.remove(t)
+    if remove_punctuation:
+        for t in punctuations_extended_tokens:
+            while t in tokens:
+                tokens.remove(t)
 
 
 def reduce_facts(atoms, method, tokenize_atoms):
@@ -203,8 +207,27 @@ def read_jsonl(filename):
     return df
 
 
+def find_missing_elements(list1, list2):
+    missing_elements = []
+    missed_values = 0
+    for i, element in enumerate(list1):
+        if list2[i-missed_values] != element:
+            missing_elements.append(element)
+            missed_values += 1
+    return missing_elements
+
+
+def find_pre_sentence(paragraph: str, index):
+    sub_paragraph = paragraph[:index]
+    last_dot_index = sub_paragraph.rfind('.')
+    last_colun_index = sub_paragraph.rfind(':')
+    return paragraph[max(last_dot_index, last_colun_index)+1: index]
+
+
 # Example usage:
 use_tokenizer = True
+show_print = True
+remove_punctuation_from_facts = True
 #jsonl_file = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\answers_gpt4_bio_test_addtional.jsonl"
 #jsonl_gpt = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\ChatGPT.jsonl"
 #example_output = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\example_output-1.json"
@@ -219,15 +242,34 @@ for annotation, generation in zip(annotations, generations):
     total_annotation_length = 0
     hallucination_indices = []
     rebuilt_sentence = []
+    original_paragraph = tokenizer(generation)[0].ids
     for sentence in annotation:
-        sentence_text_tokenized = tokenizer(sentence['text'])[0].ids
+        sentence_text_original = sentence['text']
 
-        sentence_text = sentence['text'].lower()
+
+        ## My notes:
+        # The split paragraph and the recontructed one from splits ARENT THE SAME, because the splits sometimes change
+        # The tokens, or delete some.
+        # However, I noticed that the sentence is always found within the text. Good.
+        # If this can now turn from letter index into the appropriate token's index, it would be super simple
+        # barely an inconvinience
+        # to mark the original indices.
+        ## My plan: Look backwards from the original sentence, until I find a period, and I will switch the first token
+        # in the split sentence with the token that includes all characters since the note
+        ## I did notice that sometimes it Misses a letter, and numbers as well.
+        ## Well, idc.
+        sentence_text_beginning_ind = generation.find(sentence_text_original)
+        if sentence_text_beginning_ind == -1:
+            # Should never happen.
+            raise Exception("FUUUUCCCCKKKKKK, I ASSUMED THE ENTIRE SENTENCE IS INSIDE THE ORIGINAL, FUCK")
+        pre_sentence = find_pre_sentence(generation, sentence_text_beginning_ind)
+        sentence_text_original = f"{pre_sentence}{sentence_text_original}"
+
+        sentence_text_tokenized = tokenizer(sentence_text_original, padding=True, truncation=True)[0].ids
+
+        sentence_text = sentence_text_original.lower()
         relevancy = sentence['is-relevant']
         atomic_facts = sentence['human-atomic-facts']
-
-        if atomic_facts is None or len(atomic_facts) == 0:
-            continue
 
         if not use_tokenizer:
             split_sentence = sentence_text.translate(str.maketrans(punctuations_extended, ' ' * len(punctuations_extended))).split(" ")
@@ -238,6 +280,9 @@ for annotation, generation in zip(annotations, generations):
             for t in sentence_text_tokenized:
                 rebuilt_sentence.append(t)
 
+        if atomic_facts is None or len(atomic_facts) == 0:
+            continue
+
         # Reduce facts to weak-uniqueness (Words that appear in ALL atoms are delteted)
         reduced_facts, labels = reduce_facts(atomic_facts, method='Cascading Deletion', tokenize_atoms=use_tokenizer)
         for rfact, label in zip(reduced_facts, labels):
@@ -246,9 +291,9 @@ for annotation, generation in zip(annotations, generations):
             if not use_tokenizer:
                 rrfact = remove_auxiliary_verbs(rfact)
             else:
-                remove_auxiliary_verbs_tokens(rfact)
+                remove_auxiliary_verbs_tokens(rfact, remove_punctuation_from_facts)
                 rrfact = rfact
-            print(rrfact)
+            #print(rrfact)
 
             if (not use_tokenizer and rrfact != "") or (use_tokenizer and len(rrfact) != 0):
                 my_sentence = sentence_text if not use_tokenizer else sentence_text_tokenized
@@ -263,24 +308,29 @@ for annotation, generation in zip(annotations, generations):
         else:
             total_annotation_length += len(sentence_text_tokenized)
 
-    if use_tokenizer:
-        marked_hallucinations_sentence = []
-        for i, t in enumerate(rebuilt_sentence):
-            if i in hallucination_indices:
-                marked_hallucinations_sentence.append(60)  # token for [
-                marked_hallucinations_sentence.append(t)  # token
-                marked_hallucinations_sentence.append(62)  # token for ]
-            else:
-                marked_hallucinations_sentence.append(t)
-        marked_hallucinations_sentence_decoded = tokenizer.decode(marked_hallucinations_sentence)
-        print(marked_hallucinations_sentence_decoded)
-    else:
-        for i in hallucination_indices:
-            rebuilt_sentence[i] = f"[{rebuilt_sentence[i]}]"
-        marked_generations = " ".join(rebuilt_sentence)
-        print(marked_generations)
-    # what we want to return is hallucinations indices and sentence text tokenized => Only need to notice that /n are
-    # cut in the whole ordeal.
+    if show_print:
+        if use_tokenizer:
+            marked_hallucinations_sentence = []
+            missing_tokens = find_missing_elements(original_paragraph, rebuilt_sentence)
+            if len(missing_tokens) != 0:
+                print("Missing tokens " + str(tokenizer.decode(missing_tokens)))
+            for i, t in enumerate(rebuilt_sentence):
+                if i in hallucination_indices:
+                    marked_hallucinations_sentence.append(60)  # token for [
+                    marked_hallucinations_sentence.append(t)  # token
+                    marked_hallucinations_sentence.append(62)  # token for ]
+                else:
+                    marked_hallucinations_sentence.append(t)
+            marked_hallucinations_sentence_decoded = tokenizer.decode(marked_hallucinations_sentence)
+            print(marked_hallucinations_sentence_decoded)
+        else:
+            for i in hallucination_indices:
+                rebuilt_sentence[i] = f"[{rebuilt_sentence[i]}]"
+            marked_generations = " ".join(rebuilt_sentence)
+            print(marked_generations)
+        # what we want to return is hallucinations indices and sentence text tokenized => Only need to notice that /n are
+        # cut in the whole ordeal.
+
 
 
 
