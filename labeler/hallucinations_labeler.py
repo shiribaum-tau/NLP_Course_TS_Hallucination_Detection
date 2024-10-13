@@ -219,9 +219,22 @@ def find_missing_elements(list1, list2):
 
 def find_pre_sentence(paragraph: str, index):
     sub_paragraph = paragraph[:index]
+
+    ## TODO: Needs refining to include where the other one works
+    # if index == 0:
+    #     return ""
+    # backwards_indices = 1
+    # while sub_paragraph[-backwards_indices] in [" ", "\n"]:
+    #     backwards_indices += 1
+    #     if backwards_indices == len(sub_paragraph):
+    #         break
+    # x = paragraph[index-backwards_indices: index]
+    # return x
+
     last_dot_index = sub_paragraph.rfind('.')
     last_colun_index = sub_paragraph.rfind(':')
-    return paragraph[max(last_dot_index, last_colun_index)+1: index]
+    return paragraph[max(last_dot_index, last_colun_index) + 1: index]
+
 
 
 # Example usage:
@@ -231,7 +244,7 @@ remove_punctuation_from_facts = True
 #jsonl_file = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\answers_gpt4_bio_test_addtional.jsonl"
 #jsonl_gpt = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\ChatGPT.jsonl"
 #example_output = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\labeler\example_output-1.json"
-example_output_2 = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\fact_checked_data\pythia_2.8_deterministic_fact_checked.json"
+example_output_2 = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\fact_checked_data\pythia_2.8_deterministic_fact_checked_bm25.json"
 #df_old = read_jsonl(jsonl_gpt)
 df = read_our_json(example_output_2)
 generations = df['output']
