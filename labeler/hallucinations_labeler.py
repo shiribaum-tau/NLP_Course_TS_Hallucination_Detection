@@ -211,6 +211,8 @@ def find_missing_elements(list1, list2):
     missing_elements = []
     missed_values = 0
     for i, element in enumerate(list1):
+        if i - missed_values == len(list2):
+            list2.append(element)
         if list2[i-missed_values] != element:
             missing_elements.append(element)
             missed_values += 1
@@ -219,21 +221,21 @@ def find_missing_elements(list1, list2):
 
 def find_pre_sentence(paragraph: str, index):
     sub_paragraph = paragraph[:index]
-
-    ## TODO: Needs refining to include where the other one works
-    # if index == 0:
-    #     return ""
-    # backwards_indices = 1
-    # while sub_paragraph[-backwards_indices] in [" ", "\n"]:
-    #     backwards_indices += 1
-    #     if backwards_indices == len(sub_paragraph):
-    #         break
-    # x = paragraph[index-backwards_indices: index]
-    # return x
-
     last_dot_index = sub_paragraph.rfind('.')
     last_colun_index = sub_paragraph.rfind(':')
-    return paragraph[max(last_dot_index, last_colun_index) + 1: index]
+    dot_semi_colun = paragraph[max(last_dot_index, last_colun_index) + 1: index]
+
+    if index == 0:
+        return ""
+    backwards_indices = 1
+    while sub_paragraph[-backwards_indices] in [" ", "\n"]:
+        backwards_indices += 1
+        if backwards_indices == len(sub_paragraph) + 1:
+            break
+    x = paragraph[index-backwards_indices + 1: index]
+    return x
+
+
 
 
 
@@ -256,6 +258,7 @@ for annotation, generation in zip(annotations, generations):
     hallucination_indices = []
     rebuilt_sentence = []
     original_paragraph = tokenizer(generation)[0].ids
+    last_sentence_end_index = -1
     for sentence in annotation:
         sentence_text_original = sentence['text']
 
@@ -271,12 +274,15 @@ for annotation, generation in zip(annotations, generations):
         # in the split sentence with the token that includes all characters since the note
         ## I did notice that sometimes it Misses a letter, and numbers as well.
         ## Well, idc.
-        sentence_text_beginning_ind = generation.find(sentence_text_original)
+        ## In addition, sometimes sentence_text_original shows in its entirety earlier, so find() is not good.
+        ## Need to add find() but only after a given index - Works
+        sentence_text_beginning_ind = generation.find(sentence_text_original, last_sentence_end_index+1)
         if sentence_text_beginning_ind == -1:
             # Should never happen.
             raise Exception("FUUUUCCCCKKKKKK, I ASSUMED THE ENTIRE SENTENCE IS INSIDE THE ORIGINAL, FUCK")
         pre_sentence = find_pre_sentence(generation, sentence_text_beginning_ind)
         sentence_text_original = f"{pre_sentence}{sentence_text_original}"
+        last_sentence_end_index += len(sentence_text_original) - 1
 
         sentence_text_tokenized = tokenizer(sentence_text_original, padding=True, truncation=True)[0].ids
 
