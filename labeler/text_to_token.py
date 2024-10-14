@@ -13,15 +13,12 @@ tokens = [23433,    27, 19906,   479,   247,  9015,   273, 22234,  7634,    83,
 
 pairs = [(3,12), (20, 23), (64, 68)]
 
-def get_tokenizer():
-    tokenizer = AutoTokenizer.from_pretrained(
-  "EleutherAI/pythia-2.8b")
-    tokenizer.pad_token = tokenizer.eos_token
-    return tokenizer
+tokenizer = AutoTokenizer.from_pretrained(
+"EleutherAI/pythia-2.8b")
+tokenizer.pad_token = tokenizer.eos_token
 
 
 def get_hallucation_indices(generation, tokens, pairs):
-    tokenizer = get_tokenizer()
     assert tokenizer.decode(tokens, skip_special_tokens = True) == generation, "Tokens do not make the text."
 
     text_idx = 0
@@ -63,7 +60,6 @@ def get_hallucination_labels(generation, tokens, pairs):
 
 
 if __name__ == "__main__":
-    tokenizer = get_tokenizer()
     hallucination_tokens = get_hallucation_indices(generation, tokens, pairs)
     out = [tokenizer.decode([i], skip_special_tokens = True) for i in tokens]
     for hal in hallucination_tokens:
