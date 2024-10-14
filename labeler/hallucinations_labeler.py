@@ -252,7 +252,7 @@ for annotation, generation, tokens, topic in zip(annotations, generations, all_t
 
         hallucination_indices_couples_from_start = hallucination_indices_couples_from_end[::-1]
         hallucination_by_token = get_hallucination_labels(generation, tokens, hallucination_indices_couples_from_start)
-        all_data_list = np.array([hallucination_by_token, tokens, generation])
+        all_data_list = {'labels': hallucination_by_token, 'tokens': tokens, 'generation': generation}
         try:
             with open(f"tagged_people//{topic}.pickle", "wb") as f:
                 pickle.dump(all_data_list, f)
