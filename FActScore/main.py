@@ -9,7 +9,8 @@ nltk.download('punkt_tab')
 
 KEY = ".key"
 DATA_ROOT = "/home/joberant/NLP_2324b/shirabaum/pythia_nologits" #os.path.join("..", "gen_data") #"/home/joberant/NLP_2324b/kr/output"
-REMOVE_PREFIX = True
+REMOVE_PREFIX = False
+OUT_DIR = "pythia_2.8_deterministic"
 
 def remove_prefix(s, pref):
     if s.startswith(pref):
@@ -44,6 +45,8 @@ def main():
     checked_facts = fs.get_score(topics, generations, gamma=10)
     # Now iterate over the topics
     for out_dat, decisions in zip(out_data, checked_facts['decisions']):
+        if not decisions:
+            decisions = []
         print(f"Annotating {out_dat['topic']}")
         annotations = []
         # If the generation starts with the prompt,
@@ -59,8 +62,26 @@ def main():
             annotations.append(annot)
         out_dat['annotations'] = annotations
 
-    with open("pythia_2.8_deterministic_fact_checked.json", "w") as f:
-        json.dump(out_data, f)
+    os.makedirs(OUT_DIR, exist_ok=True)
+    for guy in out_data:
+        topic = guy['topic']
+        out_path = os.path.join(OUT_DIR, f"{topic}_pythia_2.8_fact_checked_gtr.json")
+        print(f"Writing {out_path} to disc")
+        with open(out_path, "w") as f:
+            json.dump(guy, f)
+
+    print("Writing pickle")
+    with open('pythia_2.8_deterministic_fact_checked_gtr.pickle', 'wb') as handle:
+        pickle.dump(out_data, handle)
+    print("Writing big json")
+    try:
+        with open("pythia_2.8_deterministic_fact_checked_gtr.json", "w") as f:
+            json.dump(out_data, f)
+    except:
+        with open("pythia_2.8_deterministic_fact_checked_gtr.json", "w") as f:
+            json.dump(out_data, f)
+
+
 
 if __name__ == "__main__":
     main()
