@@ -30,6 +30,8 @@ def get_hallucation_indices(generation, tokens, pairs):
     in_hallucination = False
 
     hallucation_tokens = []
+    if len(pairs) == 0:
+        return hallucation_tokens
 
     for token_idx, token in enumerate(tokens):
         new_word = tokenizer.decode([token], skip_special_tokens = True)
