@@ -4,6 +4,8 @@ import numpy as np
 import re
 import matplotlib.pyplot as plt
 from transformers import GPTNeoXForCausalLM, AutoTokenizer
+import pickle
+from text_to_token import get_hallucination_labels
 
 auxiliary_verbs = [
     "be", "have", "do", "can", "could", "may", "might",
@@ -205,8 +207,10 @@ example_output_2 = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hall
 df = read_our_json(example_output_2)
 generations = df['output']
 annotations = df['annotations']
+all_tokens = df['tokens']
+topics = df['topic']
 
-for annotation, generation in zip(annotations, generations):
+for annotation, generation, tokens, topic in zip(annotations, generations, all_tokens, topics):
     if annotation is None:
         continue
     hallucination_indices_couples = []
@@ -223,7 +227,7 @@ for annotation, generation in zip(annotations, generations):
             continue
 
         if ROM_ALGO_BEST_ALGO:
-            # Reduce facts to weak-uniqueness (Words that appear in ALL atoms are delteted), or Cascading Deletion (Every
+            # Reduce facts to Weak Uniqueness (Words that appear in ALL atoms are delteted), or Cascading Deletion (Every
             # word seen in a fact will be deleted in the following ones)
             # And then find where those hallucinataions are in the given sentence
             reduced_facts, labels = reduce_facts(atomic_facts, method='Cascading Deletion')
@@ -246,8 +250,20 @@ for annotation, generation in zip(annotations, generations):
         # what we want to return is hallucinations indices and sentence text tokenized => Only need to notice that /n are
         # cut in the whole ordeal.
 
+        hallucination_indices_couples_from_start = hallucination_indices_couples_from_end[::-1]
+        hallucination_by_token = get_hallucination_labels(generation, tokens, hallucination_indices_couples_from_start)
+        all_data_list = np.array([hallucination_by_token, tokens, generation])
+        try:
+            with open(f"tagged_people//{topic}.pickle", "wb") as f:
+                pickle.dump(all_data_list, f)
+        except Exception as e:
+            print(f"{topic} is a bad person")
 
-    
+
+
+
+
+
 
 
 #print(df)
