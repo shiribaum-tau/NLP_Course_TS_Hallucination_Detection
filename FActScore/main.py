@@ -8,7 +8,7 @@ import json
 nltk.download('punkt_tab')
 
 KEY = ".key"
-DATA_ROOT = "/home/joberant/NLP_2324b/shirabaum/pythia_nologits" #os.path.join("..", "gen_data") #"/home/joberant/NLP_2324b/kr/output"
+DATA_ROOT = "/home/joberant/NLP_2324b/shirabaum/pythia_nologits" #os.path.join("..", "gen_data") #"/home/joberant/NLP_2324b/shirabaum/pythia_nologits" #os.path.join("..", "gen_data") #"/home/joberant/NLP_2324b/kr/output"
 REMOVE_PREFIX = False
 OUT_DIR = "pythia_2.8_deterministic"
 
@@ -38,6 +38,7 @@ def main():
         generations.append(stripped_generation)
         out_data.append(dict(input=generation_data['prompt'],
                              output=full_output,
+                             tokens=generation_data['tokens'].tolist(),
                              topic=generation_data['entity'],
                              cat=["N/A", "N/A"]))
     topics = [i['topic'] for i in out_data]  # topic that will be sent to factscore
