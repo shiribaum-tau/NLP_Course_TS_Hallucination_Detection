@@ -13,9 +13,16 @@ tokens = [23433,    27, 19906,   479,   247,  9015,   273, 22234,  7634,    83,
 
 pairs = [(3,12), (20, 23), (64, 68)]
 
+
 tokenizer = AutoTokenizer.from_pretrained(
 "EleutherAI/pythia-2.8b")
 tokenizer.pad_token = tokenizer.eos_token
+
+
+def intervals_intersect(pair1, pair2):
+    a1, b1 = pair1
+    a2, b2 = pair2
+    return a1 <= b2 and a2 <= b1
 
 
 def get_hallucation_indices(generation, tokens, pairs):
@@ -24,32 +31,33 @@ def get_hallucation_indices(generation, tokens, pairs):
     text_idx = 0
     pairs_idx = 0
 
-    in_hallucination = False
-
     hallucation_tokens = []
+
     if len(pairs) == 0:
         return hallucation_tokens
+
+    # re returns the index after the end of the word.
+    pairs = [(a, b - 1) for a, b in pairs]
 
     for token_idx, token in enumerate(tokens):
         new_word = tokenizer.decode([token], skip_special_tokens = True)
         idx_at_start = text_idx
         text_idx += len(new_word)
-        if in_hallucination:
-            pair_end_idx = pairs[pairs_idx][1] - 1
-            if text_idx <= pair_end_idx: # We are still in the interval
-                hallucation_tokens.append(token_idx)
-            else: # We have finished the current interval
-                if idx_at_start <= pair_end_idx:
-                    hallucation_tokens.append(token_idx)
-                in_hallucination = False
-                pairs_idx += 1
-        else:
-            if pairs[pairs_idx][0] < text_idx: # We have entered into an interval
-                hallucation_tokens.append(token_idx)
-                in_hallucination = True
+        current_span = (idx_at_start, text_idx - 1)
+
+
+        while pairs_idx < len(pairs) - 1 and pairs[pairs_idx][1] < current_span[0]:
+            # we've gone past the current hallucination. Go to the next one.
+            pairs_idx += 1
+
+        current_pair = pairs[pairs_idx]
+        if intervals_intersect(current_pair, current_span):
+            hallucation_tokens.append(token_idx)
+        # If we didn't enter the if then the word is before the hallucination. Move to the next word.
 
         if pairs_idx >= len(pairs): # No more pairs
             break
+
     return hallucation_tokens
 
 def get_hallucination_labels(generation, tokens, pairs):
