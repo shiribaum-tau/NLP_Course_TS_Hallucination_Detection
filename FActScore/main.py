@@ -8,9 +8,9 @@ import json
 nltk.download('punkt_tab')
 
 KEY = ".key"
-DATA_ROOT = "/home/joberant/NLP_2324b/shirabaum/pythia_nologits" #os.path.join("..", "gen_data") #"/home/joberant/NLP_2324b/shirabaum/pythia_nologits" #os.path.join("..", "gen_data") #"/home/joberant/NLP_2324b/kr/output"
+DATA_ROOT = "/home/joberant/NLP_2324b/shirabaum/nologits/gpt-4o-mini_nologits" #os.path.join("..", "gen_data") #"/home/joberant/NLP_2324b/shirabaum/pythia_nologits" #os.path.join("..", "gen_data") #"/home/joberant/NLP_2324b/kr/output"
 REMOVE_PREFIX = False
-OUT_DIR = "pythia_2.8_deterministic"
+OUT_DIR = "gpt4o_mini"
 
 def remove_prefix(s, pref):
     if s.startswith(pref):
@@ -36,9 +36,13 @@ def main():
                                             generation_data['prompt'])
         full_output = stripped_generation if REMOVE_PREFIX else generation_data['generated_text']
         generations.append(stripped_generation)
+        if type(generation_data['tokens']) is list:
+            alltoks = generation_data['tokens']
+        else:
+            alltoks = generation_data['tokens'].tolist()
         out_data.append(dict(input=generation_data['prompt'],
                              output=full_output,
-                             tokens=generation_data['tokens'].tolist(),
+                             tokens=alltoks,
                              topic=generation_data['entity'],
                              cat=["N/A", "N/A"]))
     topics = [i['topic'] for i in out_data]  # topic that will be sent to factscore
@@ -66,20 +70,20 @@ def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     for guy in out_data:
         topic = guy['topic']
-        out_path = os.path.join(OUT_DIR, f"{topic}_pythia_2.8_fact_checked_gtr.json")
+        out_path = os.path.join(OUT_DIR, f"{topic}_OPT_fact_checked_gtr.json")
         print(f"Writing {out_path} to disc")
         with open(out_path, "w") as f:
             json.dump(guy, f)
 
     print("Writing pickle")
-    with open('pythia_2.8_deterministic_fact_checked_gtr.pickle', 'wb') as handle:
+    with open('gpt4o_mini_fact_checked_gtr.pickle', 'wb') as handle:
         pickle.dump(out_data, handle)
     print("Writing big json")
     try:
-        with open("pythia_2.8_deterministic_fact_checked_gtr.json", "w") as f:
+        with open("gpt4o_mini_fact_checked_gtr.json", "w") as f:
             json.dump(out_data, f)
     except:
-        with open("pythia_2.8_deterministic_fact_checked_gtr.json", "w") as f:
+        with open("gpt4o_mini_fact_checked_gtr.json", "w") as f:
             json.dump(out_data, f)
 
 

@@ -2,8 +2,10 @@ import os
 import glob
 import pickle
 
-DATA_ROOT = "/home/joberant/NLP_2324b/kr/output"
-OUTPUT_ROOT = "/home/joberant/NLP_2324b/shirabaum/pythia_nologits"
+DATA_ROOT = "/home/joberant/NLP_2324b/shirabaum/OpenAI-gpt-4o-mini-gens"
+OUTPUT_ROOT = "/home/joberant/NLP_2324b/shirabaum/gpt-4o-mini_nologits"
+
+os.makedirs(OUTPUT_ROOT, exist_ok=True)
 
 def main():
     dat_files = glob.glob(os.path.join(DATA_ROOT, "*.pkl"))
