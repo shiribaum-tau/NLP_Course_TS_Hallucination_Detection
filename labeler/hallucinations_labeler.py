@@ -204,13 +204,14 @@ ROM_ALGO_BEST_ALGO = True
 show_print = True
 remove_punctuation_from_facts = True
 example_output_2 = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\fact_checked_data\OPT_deterministic_fact_checked_gtr.json"
-save_dir = r"tagged_people_OPT_deterministic_cascading_method"
+save_dir = r"../tagged_people_OPT_deterministic_cascading_method"
 method = "Cascading Deletion" #"Weak Uniqueness"#
 df = read_our_json(example_output_2)
 generations = df['output']
 annotations = df['annotations']
 all_tokens = df['tokens']
 topics = df['topic']
+skip = False
 
 for annotation, generation, tokens, topic in zip(annotations, generations, all_tokens, topics):
     if annotation is None:
@@ -219,8 +220,14 @@ for annotation, generation, tokens, topic in zip(annotations, generations, all_t
     last_sentence_end_index = -1
     for sentence in annotation:
         sentence_text = sentence['text']
-        last_sentence_end_index, this_sentence_start_ind = get_full_sentence_start_and_end_index(sentence_text, generation,
-                                                                                               last_sentence_end_index)
+
+        try:
+            last_sentence_end_index, this_sentence_start_ind = get_full_sentence_start_and_end_index(sentence_text, generation,
+                                                                                                    last_sentence_end_index)
+        except Exception:
+            print(f"{topic} is rizzless, the sentence is broken")
+            skip = True
+            break
 
         relevancy = sentence['is-relevant']
         atomic_facts = sentence['human-atomic-facts']
@@ -241,6 +248,10 @@ for annotation, generation, tokens, topic in zip(annotations, generations, all_t
             s, e = couple
             hallucination_indices_couples.append((s + this_sentence_start_ind, e + this_sentence_start_ind))
 
+    if skip:
+        skip = False
+        continue
+
     if show_print:
         hallucination_indices_couples_from_end = sorted(list(set(hallucination_indices_couples)), key=lambda x: -x[1])
         generation_to_change = generation
@@ -253,7 +264,11 @@ for annotation, generation, tokens, topic in zip(annotations, generations, all_t
         # cut in the whole ordeal.
 
         hallucination_indices_couples_from_start = hallucination_indices_couples_from_end[::-1]
-        hallucination_by_token = get_hallucination_labels(generation, tokens, hallucination_indices_couples_from_start)
+        try:
+            hallucination_by_token = get_hallucination_labels(generation, tokens, hallucination_indices_couples_from_start)
+        except AssertionError:
+            print(f"{topic} is cringe, cant rebuild that")
+            continue
         all_data_list = {'labels': hallucination_by_token, 'tokens': tokens, 'generation': generation}
         try:
             with open(f"{save_dir}//{topic}.pickle", "wb") as f:
