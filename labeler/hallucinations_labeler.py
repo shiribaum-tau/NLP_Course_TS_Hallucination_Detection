@@ -203,7 +203,9 @@ def chatgpt_finds_couples(atomic_facts, sentence_text):
 ROM_ALGO_BEST_ALGO = True
 show_print = True
 remove_punctuation_from_facts = True
-example_output_2 = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\fact_checked_data\pythia_2.8_deterministic_fact_checked_gtr.json"
+example_output_2 = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\fact_checked_data\OPT_deterministic_fact_checked_gtr.json"
+save_dir = r"tagged_people_OPT_deterministic_cascading_method"
+method = "Cascading Deletion" #"Weak Uniqueness"#
 df = read_our_json(example_output_2)
 generations = df['output']
 annotations = df['annotations']
@@ -230,7 +232,7 @@ for annotation, generation, tokens, topic in zip(annotations, generations, all_t
             # Reduce facts to Weak Uniqueness (Words that appear in ALL atoms are delteted), or Cascading Deletion (Every
             # word seen in a fact will be deleted in the following ones)
             # And then find where those hallucinataions are in the given sentence
-            reduced_facts, labels = reduce_facts(atomic_facts, method='Cascading Deletion')
+            reduced_facts, labels = reduce_facts(atomic_facts, method=method)
             sentence_hallucinations_couples = find_hallucination_indices_in_sentence(reduced_facts, labels, sentence_text)
         else:
             sentence_hallucinations_couples = chatgpt_finds_couples(atomic_facts, sentence_text)
@@ -254,7 +256,7 @@ for annotation, generation, tokens, topic in zip(annotations, generations, all_t
         hallucination_by_token = get_hallucination_labels(generation, tokens, hallucination_indices_couples_from_start)
         all_data_list = {'labels': hallucination_by_token, 'tokens': tokens, 'generation': generation}
         try:
-            with open(f"tagged_people//{topic}.pickle", "wb") as f:
+            with open(f"{save_dir}//{topic}.pickle", "wb") as f:
                 pickle.dump(all_data_list, f)
         except Exception as e:
             print(f"{topic} is a bad person")

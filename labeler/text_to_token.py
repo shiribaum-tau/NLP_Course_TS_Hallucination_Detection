@@ -1,5 +1,5 @@
 import numpy as np
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, GPT2Tokenizer
 
 GENERATION = "Irina Shayk, born Irina Shaykhlislamova on January 6, 1986, in Yemanzhelinsk, Russia, is a renowned Russian supermodel and actress. She rose to fame after being featured in the Sports Illustrated Swimsuit Issue and was named its Rookie of the Year in 2007. Shayk has graced the covers of numerous fashion magazines, including Vogue, Harper's Bazaar, and Elle, and has worked with high-profile brands such as Victoria's Secret, Givenchy, and Versace.\n\n"
 TOKENS = ["Ir","ina"," Shay","k",","," born"," Ir","ina"," Shay","k","hl","is","lam","ova"," on"," January"," ","6",","," ","198","6",","," in"," Yem","anz","hel","insk",","," Russia",","," is"," a"," renowned"," Russian"," super","model"," and"," actress","."," She"," rose"," to"," fame"," after"," being"," featured"," in"," the"," Sports"," Illustrated"," Sw","ims","uit"," Issue"," and"," was"," named"," its"," Rookie"," of"," the"," Year"," in"," ","200","7","."," Shay","k"," has"," gr","aced"," the"," covers"," of"," numerous"," fashion"," magazines",","," including"," Vogue",","," Harper","'s"," Bazaar",","," and"," Elle",","," and"," has"," worked"," with"," high","-profile"," brands"," such"," as"," Victoria","'s"," Secret",","," Given","chy",","," and"," Vers","ace",".\n\n"]
@@ -16,7 +16,8 @@ PAIRS = [(3,12), (20, 23), (64, 68)]
 
 
 tokenizer = AutoTokenizer.from_pretrained(
-"EleutherAI/pythia-2.8b")
+"facebook/opt-2.7b")
+#tokenizer = AutoTokenizer.from_pretrained("facebook/opt-2.7b")
 tokenizer.pad_token = tokenizer.eos_token
 
 
