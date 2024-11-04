@@ -3,7 +3,6 @@ import json
 import numpy as np
 import re
 import matplotlib.pyplot as plt
-from transformers import GPTNeoXForCausalLM, AutoTokenizer
 import pickle
 from text_to_token import get_hallucination_labels
 
@@ -17,7 +16,8 @@ auxiliary_verbs = [
     "may", "might",
     "must",
     "shall", "should",
-    "will", "would"]
+    "will", "would",
+    "in", "the", "of", "a", "to", "on", "for", "as", "at"]
 
 
 punctuations_extended = r"""!"#$%&'()*+,-–./:;<=>?@[\]^_`{|}~"""
@@ -204,7 +204,7 @@ ROM_ALGO_BEST_ALGO = True
 show_print = True
 remove_punctuation_from_facts = True
 example_output_2 = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\fact_checked_data\OPT_deterministic_fact_checked_gtr.json"
-save_dir = r"../tagged_people_OPT_deterministic_cascading_method"
+save_dir = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProject\ts_hallucination\tagged_people\tagged_people_OPT_deterministic_cascading_method"
 method = "Cascading Deletion" #"Weak Uniqueness"#
 df = read_our_json(example_output_2)
 generations = df['output']

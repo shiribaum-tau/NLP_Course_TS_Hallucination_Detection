@@ -17,7 +17,7 @@ PAIRS = [(3,12), (20, 23), (64, 68)]
 
 tokenizer = AutoTokenizer.from_pretrained(
 "facebook/opt-2.7b")
-#tokenizer = AutoTokenizer.from_pretrained("facebook/opt-2.7b")
+#tokenizer = AutoTokenizer.from_pretrained("EleutherAI/pythia-2.8b")
 tokenizer.pad_token = tokenizer.eos_token
 
 

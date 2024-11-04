@@ -4,10 +4,10 @@ import os
 import logging
 
 
-def create_windows(entry_data, top_k, window_size, stride):
-    logits = entry_data['top_k_probs'][:, -top_k:]
+def create_windows(entry_data, top_k, window_size, stride, logit_key_name = "top_k_probs", label_key_name = "labels"):
+    logits = entry_data[logit_key_name][:, -top_k:]
     # Cut labels to remove prompt
-    labels = entry_data['labels'][-logits.shape[0]:]
+    labels = entry_data[label_key_name][-logits.shape[0]:]
 
     num_windows = ((logits.shape[0] - window_size) // stride) + 1
 
