@@ -2,3 +2,8 @@ enwiki-20230401.db
 .ipynb_checkpoints
 .key
 **/old data.rar
+**/all_300_bios.jsonl
+data_exploration/OPT/
+data_exploration/pythia/
+data_exploration/mini_GPT/
+
