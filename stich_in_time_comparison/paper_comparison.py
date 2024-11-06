@@ -30,10 +30,9 @@ noob_person_absolute_path = r"C:\Users\Arik Drori\Desktop\Year3+\NLP\FinalProjec
 
 
 for i, thresh in enumerate(threshold_array):
-    directory = r"D:\Downloads\mini_GPT\mini_GPT"
     all_probs = []
     all_labels = []
-    for root, dirs, files in os.walk(directory):
+    for root, dirs, files in os.walk(noob_person_absolute_path):
         for file in files:
             file_path = os.path.join(root, file)
             data = None
@@ -43,12 +42,12 @@ for i, thresh in enumerate(threshold_array):
 
             logit_windows, labels_windows = create_windows(data, topk, winsize, stride)
 
-            entity = os.path.basename(file_path).replace("_data.pkl", "")
-            with open(os.path.join(noob_person_absolute_path, f"{entity}_gpt-4o-mini-2024-07-18_300_w_chosen_token_and_concepts.pkl"), "rb") as f:
-                dat2 = pickle.load(f)
-                dat2['chosen_token_prob2'] = dat2['chosen_token_prob'].unsqueeze(1)
-            prob_windows, concept_windows = create_windows(dat2, topk, winsize, stride, logit_key_name="chosen_token_prob2",
-                                                           label_key_name='concept_words')
+            # entity = os.path.basename(file_path).replace("_data.pkl", "")
+            # with open(os.path.join(noob_person_absolute_path, f"{entity}_gpt-4o-mini-2024-07-18_300_w_chosen_token_and_concepts.pkl"), "rb") as f:
+            #     dat2 = pickle.load(f)
+            data['chosen_token_prob2'] = data['chosen_token_prob'].unsqueeze(1)
+            prob_windows, concept_windows = create_windows(data, topk, winsize, stride, logit_key_name="chosen_token_prob2",
+                                                            label_key_name='concept_words')
             prob_windows = prob_windows.squeeze(2)
             for probs, labels, concepts in zip(prob_windows, labels_windows, concept_windows):
                 all_probs.append(do_thing(probs, concepts))
