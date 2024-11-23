@@ -130,7 +130,7 @@ if __name__ == '__main__':
     parser.add_argument("--top_p", type=float, default=0.9)
     parser.add_argument("--random_seed", type=int, default=42)
     parser.add_argument("--device", type=str, default='cpu')
-    parser.add_argument("--model", type=str, default="EleutherAI/pythia-2.8b")
+    parser.add_argument("--model", type=str, default="facebook/opt-2.7b")
     parser.add_argument("--output_dir", type=str, default=".")
     parser.add_argument("--gen_len", type=int, default=300)
 
