@@ -1,0 +1,17 @@
+2024-11-16 20:30:19,815 - --------Starting script with the following arguments--------
+2024-11-16 20:30:19,816 - Predictor model: BiLSTM
+2024-11-16 20:30:19,816 - The data was generated using the model: pythia
+2024-11-16 20:30:19,816 - Top_k: 20
+2024-11-16 20:30:19,816 - Window size: 6
+2024-11-16 20:30:19,816 - Stride: 1
+2024-11-16 20:30:19,816 - Finished loading test data, num test: 60
+2024-11-16 20:31:29,546 - Finished test windows, logits windows shape: (16658, 6, 20)
+2024-11-16 20:31:29,546 - Finished test windows, labels windows shape: (16658, 2)
+2024-11-16 20:31:29,548 - Number of hallucination windows in test: 11881.0
+2024-11-16 20:31:29,548 - Number of non-hallucination windows in test: 4777.0
+2024-11-16 20:31:35,192 - ---- Start evaluating ----
+2024-11-16 20:31:39,664 - Accuracy: 0.7132
+2024-11-16 20:31:39,664 - Precision: 0.7132
+2024-11-16 20:31:39,664 - Recall: 1.0000
+2024-11-16 20:31:39,664 - F1: 0.8326
+2024-11-16 20:31:39,664 - AUROC: 0.5000

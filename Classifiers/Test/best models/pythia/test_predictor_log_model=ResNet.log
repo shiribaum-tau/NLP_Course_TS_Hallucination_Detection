@@ -1,0 +1,17 @@
+2024-11-16 20:31:05,476 - --------Starting script with the following arguments--------
+2024-11-16 20:31:05,477 - Predictor model: ResNet
+2024-11-16 20:31:05,477 - The data was generated using the model: pythia
+2024-11-16 20:31:05,477 - Top_k: 20
+2024-11-16 20:31:05,477 - Window size: 6
+2024-11-16 20:31:05,478 - Stride: 1
+2024-11-16 20:31:05,478 - Finished loading test data, num test: 60
+2024-11-16 20:31:29,521 - Finished test windows, logits windows shape: (16658, 6, 20)
+2024-11-16 20:31:29,521 - Finished test windows, labels windows shape: (16658, 2)
+2024-11-16 20:31:29,523 - Number of hallucination windows in test: 11881.0
+2024-11-16 20:31:29,523 - Number of non-hallucination windows in test: 4777.0
+2024-11-16 20:31:32,330 - ---- Start evaluating ----
+2024-11-16 20:31:39,784 - Accuracy: 0.6093
+2024-11-16 20:31:39,784 - Precision: 0.7359
+2024-11-16 20:31:39,784 - Recall: 0.7052
+2024-11-16 20:31:39,784 - F1: 0.7202
+2024-11-16 20:31:39,784 - AUROC: 0.5379

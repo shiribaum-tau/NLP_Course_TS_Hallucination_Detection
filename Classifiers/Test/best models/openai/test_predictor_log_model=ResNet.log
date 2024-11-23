@@ -1,0 +1,17 @@
+2024-11-16 13:36:56,828 - --------Starting script with the following arguments--------
+2024-11-16 13:36:56,829 - Predictor model: ResNet
+2024-11-16 13:36:56,829 - The data was generated using the model: openai
+2024-11-16 13:36:56,829 - Top_k: 20
+2024-11-16 13:36:56,829 - Window size: 6
+2024-11-16 13:36:56,829 - Stride: 1
+2024-11-16 13:36:56,831 - Finished loading test data, num test: 137
+2024-11-16 13:37:11,081 - Finished test windows, logits windows shape: (33147, 6, 20)
+2024-11-16 13:37:11,082 - Finished test windows, labels windows shape: (33147, 2)
+2024-11-16 13:37:11,136 - Number of hallucination windows in test: 9553.0
+2024-11-16 13:37:11,136 - Number of non-hallucination windows in test: 23594.0
+2024-11-16 13:37:15,676 - ---- Start evaluating ----
+2024-11-16 13:37:34,506 - Accuracy: 0.4312
+2024-11-16 13:37:34,506 - Precision: 0.3022
+2024-11-16 13:37:34,507 - Recall: 0.7435
+2024-11-16 13:37:34,507 - F1: 0.4297
+2024-11-16 13:37:34,507 - AUROC: 0.5241

@@ -1,0 +1,32 @@
+2024-11-07 22:28:29,689 - --------Starting script with the following arguments--------
+2024-11-07 22:28:29,690 - Predictor model: BiLSTM
+2024-11-07 22:28:29,690 - The data was generated using the model: openai
+2024-11-07 22:28:29,690 - Top_k: 50
+2024-11-07 22:28:29,690 - Window size: 6
+2024-11-07 22:28:29,690 - Stride: 6
+2024-11-07 22:28:43,298 - Using device: cuda
+2024-11-07 22:28:43,312 - Finished train and val split, num val: 109
+2024-11-07 22:28:44,744 - Finished train windows, logits windows shape: (18358, 6, 20)
+2024-11-07 22:28:44,744 - Finished train windows, labels windows shape: (18358, 2)
+2024-11-07 22:28:45,081 - Finished val windows, logits windows shape: (4630, 6, 20)
+2024-11-07 22:28:45,081 - Finished val windows, labels windows shape: (4630, 2)
+2024-11-07 22:28:45,083 - Number of hallucination windows in training: 5300.0
+2024-11-07 22:28:45,083 - Number of non-hallucination windows in training: 13058.0
+2024-11-07 22:28:45,083 - Number of hallucination windows in validation: 1405.0
+2024-11-07 22:28:45,083 - Number of non-hallucination windows in validation: 3225.0
+2024-11-07 22:28:49,882 - ---- Start training ----
+2024-11-07 22:32:57,038 - ---- Finished training ----
+2024-11-07 22:32:57,038 - Max train accuracy obtained with this model: 0.5648218989372253
+2024-11-07 22:32:57,038 - Max val accuracy obtained with this model: 0.5557235479354858
+2024-11-07 22:32:57,039 - Max train AUPRC obtained with this model: 0.37831243872642517
+2024-11-07 22:32:57,039 - Max val AUPRC obtained with this model: 0.36232051253318787
+2024-11-07 22:32:57,039 - Max train AUROC obtained with this model: 0.580872118473053
+2024-11-07 22:32:57,039 - Max val AUROC obtained with this model: 0.5449967384338379
+2024-11-07 22:32:57,039 - Best epoch - f1 score: 1
+2024-11-07 22:32:57,039 - Best epoch - AUPRC: 169
+2024-11-07 22:32:57,039 - Best epoch - AUROC: 22
+2024-11-07 22:33:00,031 - Accuracy: 0.4786
+2024-11-07 22:33:00,031 - Precision: 0.3232
+2024-11-07 22:33:00,031 - Recall: 0.6562
+2024-11-07 22:33:00,031 - F1: 0.4331
+2024-11-07 22:33:00,031 - AUROC: 0.5287

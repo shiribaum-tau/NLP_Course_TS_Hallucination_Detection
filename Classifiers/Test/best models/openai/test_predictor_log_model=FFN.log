@@ -1,0 +1,17 @@
+2024-11-16 19:39:37,656 - --------Starting script with the following arguments--------
+2024-11-16 19:39:37,656 - Predictor model: FFN
+2024-11-16 19:39:37,656 - The data was generated using the model: openai
+2024-11-16 19:39:37,656 - Top_k: 20
+2024-11-16 19:39:37,656 - Window size: 6
+2024-11-16 19:39:37,657 - Stride: 1
+2024-11-16 19:39:37,659 - Finished loading test data, num test: 137
+2024-11-16 19:39:53,967 - Finished test windows, logits windows shape: (33147, 6, 20)
+2024-11-16 19:39:53,968 - Finished test windows, labels windows shape: (33147, 2)
+2024-11-16 19:39:53,973 - Number of hallucination windows in test: 9553.0
+2024-11-16 19:39:53,973 - Number of non-hallucination windows in test: 23594.0
+2024-11-16 19:39:55,087 - ---- Start evaluating ----
+2024-11-16 19:40:00,092 - Accuracy: 0.7146
+2024-11-16 19:40:00,092 - Precision: 0.8298
+2024-11-16 19:40:00,092 - Recall: 0.0122
+2024-11-16 19:40:00,092 - F1: 0.0241
+2024-11-16 19:40:00,092 - AUROC: 0.5056

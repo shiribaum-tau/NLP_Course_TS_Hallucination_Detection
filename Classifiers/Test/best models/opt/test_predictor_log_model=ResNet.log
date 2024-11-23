@@ -1,0 +1,17 @@
+2024-11-16 20:40:39,059 - --------Starting script with the following arguments--------
+2024-11-16 20:40:39,060 - Predictor model: ResNet
+2024-11-16 20:40:39,060 - The data was generated using the model: opt
+2024-11-16 20:40:39,060 - Top_k: 20
+2024-11-16 20:40:39,060 - Window size: 6
+2024-11-16 20:40:39,060 - Stride: 1
+2024-11-16 20:40:39,061 - Finished loading test data, num test: 56
+2024-11-16 20:41:29,312 - Finished test windows, logits windows shape: (14970, 6, 20)
+2024-11-16 20:41:29,312 - Finished test windows, labels windows shape: (14970, 2)
+2024-11-16 20:41:29,313 - Number of hallucination windows in test: 10324.0
+2024-11-16 20:41:29,313 - Number of non-hallucination windows in test: 4646.0
+2024-11-16 20:41:46,708 - ---- Start evaluating ----
+2024-11-16 20:42:12,205 - Accuracy: 0.5682
+2024-11-16 20:42:12,205 - Precision: 0.6911
+2024-11-16 20:42:12,205 - Recall: 0.6761
+2024-11-16 20:42:12,205 - F1: 0.6835
+2024-11-16 20:42:12,205 - AUROC: 0.5023

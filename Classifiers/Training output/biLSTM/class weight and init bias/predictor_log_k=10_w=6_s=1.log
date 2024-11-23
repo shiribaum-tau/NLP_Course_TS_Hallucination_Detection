@@ -1,0 +1,22 @@
+2024-11-07 11:09:07,692 - --------Starting script with the following arguments--------
+2024-11-07 11:09:07,692 - Predictor model: BiLSTM
+2024-11-07 11:09:07,692 - The data was generated using the model: openai
+2024-11-07 11:09:07,692 - Top_k: 10
+2024-11-07 11:09:07,692 - Window size: 6
+2024-11-07 11:09:07,692 - Stride: 1
+2024-11-07 11:09:15,306 - Using device: cuda
+2024-11-07 11:09:15,321 - Finished train and val split, num val: 109
+2024-11-07 11:09:16,476 - Finished train windows, logits windows shape: (108535, 6, 10)
+2024-11-07 11:09:16,476 - Finished train windows, labels windows shape: (108535, 2)
+2024-11-07 11:09:16,755 - Finished val windows, logits windows shape: (27373, 6, 10)
+2024-11-07 11:09:16,755 - Finished val windows, labels windows shape: (27373, 2)
+2024-11-07 11:09:16,766 - Number of hallucination windows in training: 31590.0
+2024-11-07 11:09:16,766 - Number of non-hallucination windows in training: 76945.0
+2024-11-07 11:09:16,767 - Number of hallucination windows in validation: 8313.0
+2024-11-07 11:09:16,767 - Number of non-hallucination windows in validation: 19060.0
+2024-11-07 11:09:20,896 - ---- Start training ----
+2024-11-07 11:31:32,087 - ---- Finished training ----
+2024-11-07 11:31:36,849 - Accuracy: 0.5809
+2024-11-07 11:31:36,849 - Precision: 0.3468
+2024-11-07 11:31:36,849 - Recall: 0.4299
+2024-11-07 11:31:36,849 - F1: 0.3839

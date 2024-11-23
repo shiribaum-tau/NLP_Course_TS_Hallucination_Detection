@@ -1,0 +1,17 @@
+2024-11-16 13:28:29,212 - --------Starting script with the following arguments--------
+2024-11-16 13:28:29,212 - Predictor model: BiLSTM
+2024-11-16 13:28:29,212 - The data was generated using the model: openai
+2024-11-16 13:28:29,212 - Top_k: 20
+2024-11-16 13:28:29,212 - Window size: 6
+2024-11-16 13:28:29,212 - Stride: 1
+2024-11-16 13:28:29,213 - Finished loading test data, num test: 137
+2024-11-16 13:28:43,751 - Finished test windows, logits windows shape: (33147, 6, 20)
+2024-11-16 13:28:43,751 - Finished test windows, labels windows shape: (33147, 2)
+2024-11-16 13:28:43,769 - Number of hallucination windows in test: 9553.0
+2024-11-16 13:28:43,769 - Number of non-hallucination windows in test: 23594.0
+2024-11-16 13:28:49,171 - ---- Start evaluating ----
+2024-11-16 13:29:02,838 - Accuracy: 0.2882
+2024-11-16 13:29:02,839 - Precision: 0.2882
+2024-11-16 13:29:02,839 - Recall: 1.0000
+2024-11-16 13:29:02,839 - F1: 0.4474
+2024-11-16 13:29:02,839 - AUROC: 0.5000

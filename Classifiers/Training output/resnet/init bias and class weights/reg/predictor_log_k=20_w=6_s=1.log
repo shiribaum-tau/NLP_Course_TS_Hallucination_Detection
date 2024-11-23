@@ -1,0 +1,35 @@
+2024-11-13 12:29:18,903 - --------Starting script with the following arguments--------
+2024-11-13 12:29:18,904 - Predictor model: ResNet
+2024-11-13 12:29:18,904 - The data was generated using the model: openai
+2024-11-13 12:29:18,904 - Top_k: 20
+2024-11-13 12:29:18,904 - Window size: 6
+2024-11-13 12:29:18,904 - Stride: 1
+2024-11-13 12:29:18,904 - Start learning rate: 0.001
+2024-11-13 12:29:18,960 - Using device: cuda
+2024-11-13 12:29:18,965 - Finished train and val split, num val: 109
+2024-11-13 12:29:19,551 - Finished train windows, logits windows shape: (108535, 6, 20)
+2024-11-13 12:29:19,551 - Finished train windows, labels windows shape: (108535, 2)
+2024-11-13 12:29:19,680 - Finished val windows, logits windows shape: (27373, 6, 20)
+2024-11-13 12:29:19,680 - Finished val windows, labels windows shape: (27373, 2)
+2024-11-13 12:29:19,692 - Number of hallucination windows in training: 31590.0
+2024-11-13 12:29:19,692 - Number of non-hallucination windows in training: 76945.0
+2024-11-13 12:29:19,692 - Number of hallucination windows in validation: 8313.0
+2024-11-13 12:29:19,692 - Number of non-hallucination windows in validation: 19060.0
+2024-11-13 12:29:20,444 - ---- Start training ----
+2024-11-13 12:46:52,357 - ---- Finished training ----
+2024-11-13 12:46:52,360 - Max train accuracy obtained with this model: 0.9891095161437988
+2024-11-13 12:46:52,360 - Max val accuracy obtained with this model: 0.6454170346260071
+2024-11-13 12:46:52,361 - Max train AUPRC obtained with this model: 0.9723213315010071
+2024-11-13 12:46:52,361 - Max val AUPRC obtained with this model: 0.3327621817588806
+2024-11-13 12:46:52,361 - Max train AUROC obtained with this model: 0.986795961856842
+2024-11-13 12:46:52,361 - Max val AUROC obtained with this model: 0.540069580078125
+2024-11-13 12:46:52,361 - Max train F1 score obtained with this model: 0.981290876865387
+2024-11-13 12:46:52,361 - Max val F1 score obtained with this model: 0.4397330582141876
+2024-11-13 12:46:52,362 - Best epoch - f1 score: 0
+2024-11-13 12:46:52,362 - Best epoch - AUPRC: 16
+2024-11-13 12:46:52,362 - Best epoch - AUROC: 3
+2024-11-13 12:47:20,045 - Accuracy: 0.5709
+2024-11-13 12:47:20,045 - Precision: 0.3455
+2024-11-13 12:47:20,045 - Recall: 0.4616
+2024-11-13 12:47:20,045 - F1: 0.3952
+2024-11-13 12:47:20,045 - AUROC: 0.5401

@@ -1,0 +1,33 @@
+2024-11-10 09:58:50,708 - --------Starting script with the following arguments--------
+2024-11-10 09:58:50,709 - Predictor model: BiLSTM
+2024-11-10 09:58:50,709 - The data was generated using the model: openai
+2024-11-10 09:58:50,709 - Top_k: 10
+2024-11-10 09:58:50,709 - Window size: 6
+2024-11-10 09:58:50,709 - Stride: 1
+2024-11-10 09:58:50,852 - Using device: cuda
+2024-11-10 09:58:50,871 - Finished train and val split, num val: 109
+2024-11-10 09:58:53,328 - Finished train windows, logits windows shape: (108535, 6, 10)
+2024-11-10 09:58:53,329 - Finished train windows, labels windows shape: (108535, 2)
+2024-11-10 09:58:53,845 - Finished val windows, logits windows shape: (27373, 6, 10)
+2024-11-10 09:58:53,846 - Finished val windows, labels windows shape: (27373, 2)
+2024-11-10 09:58:53,866 - Number of hallucination windows in training: 31590.0
+2024-11-10 09:58:53,866 - Number of non-hallucination windows in training: 76945.0
+2024-11-10 09:58:53,866 - Number of hallucination windows in validation: 8313.0
+2024-11-10 09:58:53,866 - Number of non-hallucination windows in validation: 19060.0
+2024-11-10 09:59:43,212 - Finished scaling
+2024-11-10 09:59:46,858 - ---- Start training ----
+2024-11-10 10:37:55,924 - ---- Finished training ----
+2024-11-10 10:37:55,924 - Max train accuracy obtained with this model: 0.762408435344696
+2024-11-10 10:37:55,924 - Max val accuracy obtained with this model: 0.5742154717445374
+2024-11-10 10:37:55,924 - Max train AUPRC obtained with this model: 0.7397841215133667
+2024-11-10 10:37:55,924 - Max val AUPRC obtained with this model: 0.3646111786365509
+2024-11-10 10:37:55,925 - Max train AUROC obtained with this model: 0.8633363246917725
+2024-11-10 10:37:55,925 - Max val AUROC obtained with this model: 0.551067590713501
+2024-11-10 10:37:55,925 - Best epoch - f1 score: 8
+2024-11-10 10:37:55,925 - Best epoch - AUPRC: 14
+2024-11-10 10:37:55,925 - Best epoch - AUROC: 12
+2024-11-10 10:38:27,206 - Accuracy: 0.5081
+2024-11-10 10:38:27,206 - Precision: 0.3287
+2024-11-10 10:38:27,206 - Recall: 0.5947
+2024-11-10 10:38:27,206 - F1: 0.4234
+2024-11-10 10:38:27,206 - AUROC: 0.5325

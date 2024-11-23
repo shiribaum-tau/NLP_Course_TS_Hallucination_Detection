@@ -1,0 +1,32 @@
+2024-11-07 14:25:33,029 - --------Starting script with the following arguments--------
+2024-11-07 14:25:33,030 - Predictor model: BiLSTM
+2024-11-07 14:25:33,030 - The data was generated using the model: openai
+2024-11-07 14:25:33,030 - Top_k: 50
+2024-11-07 14:25:33,030 - Window size: 6
+2024-11-07 14:25:33,030 - Stride: 1
+2024-11-07 14:25:47,361 - Using device: cuda
+2024-11-07 14:25:47,380 - Finished train and val split, num val: 109
+2024-11-07 14:25:48,956 - Finished train windows, logits windows shape: (108535, 6, 20)
+2024-11-07 14:25:48,956 - Finished train windows, labels windows shape: (108535, 2)
+2024-11-07 14:25:49,322 - Finished val windows, logits windows shape: (27373, 6, 20)
+2024-11-07 14:25:49,323 - Finished val windows, labels windows shape: (27373, 2)
+2024-11-07 14:25:49,334 - Number of hallucination windows in training: 31590.0
+2024-11-07 14:25:49,334 - Number of non-hallucination windows in training: 76945.0
+2024-11-07 14:25:49,334 - Number of hallucination windows in validation: 8313.0
+2024-11-07 14:25:49,334 - Number of non-hallucination windows in validation: 19060.0
+2024-11-07 14:25:54,167 - ---- Start training ----
+2024-11-07 14:46:29,447 - ---- Finished training ----
+2024-11-07 14:46:29,448 - Max train accuracy obtained with this model: 0.5979729890823364
+2024-11-07 14:46:29,448 - Max val accuracy obtained with this model: 0.6010302305221558
+2024-11-07 14:46:29,448 - Max train AUPRC obtained with this model: 0.435892790555954
+2024-11-07 14:46:29,448 - Max val AUPRC obtained with this model: 0.3910348415374756
+2024-11-07 14:46:29,448 - Max train AUROC obtained with this model: 0.6165381669998169
+2024-11-07 14:46:29,449 - Max val AUROC obtained with this model: 0.5589479804039001
+2024-11-07 14:46:29,449 - Best epoch - f1 score: 0
+2024-11-07 14:46:29,449 - Best epoch - AUPRC: 39
+2024-11-07 14:46:29,449 - Best epoch - AUROC: 30
+2024-11-07 14:46:34,444 - Accuracy: 0.5101
+2024-11-07 14:46:34,445 - Precision: 0.3316
+2024-11-07 14:46:34,445 - Recall: 0.6034
+2024-11-07 14:46:34,445 - F1: 0.4280
+2024-11-07 14:46:34,445 - AUROC: 0.5364
